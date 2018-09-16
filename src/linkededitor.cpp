@@ -30,11 +30,12 @@ private:
 	Node<T> * tail;
 public:
 	void insertEnd(T value);
-	void add(int index, T value);
+	void insert(int index, T value);
 	void edit(int index, T value);
 	void remove(int index);
 	T get(int index);
 	void print();
+	void find(string value);
 	Iterator<T> * makeIterator();
 };
 
@@ -75,8 +76,8 @@ template <class T> void LinkedList<T>::insertEnd(T value){
 	tail = tail->next;
 }
 
-template <class T> void LinkedList<T>::add(int index,T value){
-	if(index == 0){
+template <class T> void LinkedList<T>::insert(int index,T value){
+	if(index == 1){
 		Node <T> * newNode = new Node<T>();
 		newNode->data = value;
 		newNode->next = head;
@@ -84,7 +85,7 @@ template <class T> void LinkedList<T>::add(int index,T value){
 		return;
 	}
 	Node <T> * current = head;
-	for(int i = 0; i < index - 1; ++i)
+	for(int i = 0; i < index - 2; ++i)
 		current = current->next;
 	Node <T> * newNode = new Node<T>();
 	newNode->data = value;
@@ -96,7 +97,7 @@ template <class T> void LinkedList<T>::add(int index,T value){
 }
 
 template <class T> void LinkedList<T>::remove(int index){
-	if(index == 0){
+	if(index == 1){
 		Node <T> * temp = head;
 		head = head->next;
 		delete temp;
@@ -104,7 +105,7 @@ template <class T> void LinkedList<T>::remove(int index){
 		return;
 	}
 	Node <T> * current = head;
-	for(int i = 0; i < index - 1; ++i)
+	for(int i = 0; i < index - 2; ++i)
 		current = current->next;
 	Node <T> * temp = current->next;
 	current->next = temp->next;
@@ -118,62 +119,95 @@ template <class T> void LinkedList<T>::remove(int index){
 
 template <class T> void LinkedList<T>::print(){
 	Node <T> * temp = head;
+	int count = 1;
 	while(temp != NULL){
-		cout << temp->data << " -> ";
+		cout << count << " " << temp->data << endl;
 		temp = temp->next;
+		count++;
 	}
-	cout << "NULL\n";
 }
 
-string stringAfterSpace(std::string word)
-{
+template <class T> void LinkedList<T>::edit(int index, T value){
+	Node <T> * temp = head;
+	for(int i = 0; i < index-1; i++)
+		temp = temp->next;
+	temp->data == value;
+}
+
+template <class T> void LinkedList<T>::find(string value){
+	Node <T> * temp = head;
+	int count = 1;
+	while(temp->data.find(value) == string::npos){
+		temp = temp->next;
+		count++;
+	}
+	cout << count << " " << temp->data << endl;
+}
+
+string stringAfterSpace(string word){
 	for(unsigned int i = 0; i < word.size(); i++)
 		if (isspace(word[i]))
-			return word.substr(i);
+			return word.substr(i+1);
 	return "";
 }
 
-string stringBeforeSpace(std::string word)
-{
+string stringBeforeSpace(string word){
     for(unsigned int i = 0; i < word.size(); i++)
         if (isspace(word[i]))
         	return word.substr(0,i);
-    return "";
+    return word;
+}
+
+string removeQuotes(string word){
+	return word.substr(1,word.size()-2);
+}
+
+int toInt(string numStr){
+	return numStr[0] - '0';
 }
 
 int main() {
 	LinkedList <string> * linkedList = new LinkedList<string>();
+	int index = 0;
 	string totalUserInput = "", input = "", command = "";
 	bool running = true;
 
 	while(running){
 
 		getline (cin, totalUserInput);
-		input = stringAfterSpace(totalUserInput);
-		command = stringBeforeSpace(totalUserInput);
 
-		//"insertEnd "lolol""
+		if(totalUserInput.size() > 0){
+			input = stringAfterSpace(totalUserInput);
+			command = stringBeforeSpace(totalUserInput);
 
-		if(command == "insertEnd"){
-			cout << "yoooo";
-			running = false;
+			if(command == "insertEnd"){
+				linkedList->insertEnd(removeQuotes(input));
+			}
+			else if(command == "insert"){
+				index = toInt(stringBeforeSpace(input));
+				input = stringAfterSpace(input);
+				linkedList->insert(index, removeQuotes(input));
+			}
+			else if(command == "search"){
+				linkedList->find(removeQuotes(input));
+			}
+			else if(command == "delete"){
+				index = toInt(stringBeforeSpace(input));
+				linkedList->remove(index);
+			}
+			else if(command == "print"){
+				linkedList->print();
+			}
+			else if(command == "edit"){
+				index = toInt(stringBeforeSpace(input));
+				input = stringAfterSpace(input);
+				linkedList->edit(index, removeQuotes(input));
+			}
+			else if(command == "quit"){
+				running = false;
+			}
 		}
-		else if(command == "search"){
-			;
-		}
-		else if(command == "print"){
-			;
-		}
-		else if(command == "edit"){
-			;
-		}
-		else if(command == "quit"){
-			;
-		}
-		running = false;
-
 	}
-
 	return 0;
 }
 
