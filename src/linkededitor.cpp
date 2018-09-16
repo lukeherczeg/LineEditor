@@ -1,68 +1,8 @@
+using namespace std;
 #include <iostream>
 #include <fstream>
 #include <string>
-using namespace std;
-
-template<class T>
-class Node {
-public:
-	T data;
-	Node<T> * next;
-};
-
-template<class T>
-class Iterator{
-private:
-	Node<T>* startNode;
-	Node<T>* currentNode;
-public:
-	Iterator(Node<T> * startNode);
-	bool end();
-	void begin();
-	Node<T> * current();
-	void next();
-};
-
-template <class T>
-class LinkedList{
-private:
-	Node<T> * head;
-	Node<T> * tail;
-public:
-	void insertEnd(T value);
-	void insert(int index, T value);
-	void edit(int index, T value);
-	void remove(int index);
-	T get(int index);
-	void print();
-	void find(string value);
-	Iterator<T> * makeIterator();
-};
-
-
-template <class T> Iterator<T>::Iterator(Node <T> * startNode){ // @suppress("Class members should be properly initialized")
-	this->startNode = startNode;
-}
-
-template <class T> bool Iterator<T>::end(){
-	return this->currentNode == NULL;
-}
-
-template <class T> void Iterator<T>::begin(){
-	this->currentNode = startNode;
-}
-
-template <class T> void Iterator<T>::next(){
-	this->currentNode = this->currentNode->next;
-}
-
-template <class T> Node<T> * Iterator<T>::current(){
-	return this->currentNode;
-}
-
-template <class T> Iterator<T> * LinkedList<T>::makeIterator(){
-	return new Iterator<T>(head);
-}
+#include "linkededitor.h"
 
 template <class T> void LinkedList<T>::insertEnd(T value){
 	if(head==NULL){
@@ -85,8 +25,11 @@ template <class T> void LinkedList<T>::insert(int index,T value){
 		return;
 	}
 	Node <T> * current = head;
-	for(int i = 0; i < index - 2; ++i)
+	for(int i = 0; i < index - 2; ++i){
+		if(current->next == NULL)
+			return;
 		current = current->next;
+	}
 	Node <T> * newNode = new Node<T>();
 	newNode->data = value;
 	newNode->next = current->next;
@@ -105,14 +48,16 @@ template <class T> void LinkedList<T>::remove(int index){
 		return;
 	}
 	Node <T> * current = head;
-	for(int i = 0; i < index - 2; ++i)
+	for(int i = 0; i < index - 2; ++i){
 		current = current->next;
+		if(current->next == NULL)
+			return;
+	}
 	Node <T> * temp = current->next;
 	current->next = temp->next;
 	if(temp == tail){
 		tail = current;
 	}
-	current->next = current->next->next;
 	delete temp;
 	temp = NULL;
 }
@@ -131,17 +76,25 @@ template <class T> void LinkedList<T>::edit(int index, T value){
 	Node <T> * temp = head;
 	for(int i = 0; i < index-1; i++)
 		temp = temp->next;
-	temp->data == value;
+	temp->data = value;
 }
 
 template <class T> void LinkedList<T>::find(string value){
 	Node <T> * temp = head;
+	bool found = false;
 	int count = 1;
-	while(temp->data.find(value) == string::npos){
+	while(temp != NULL){
+		if(temp->data.find(value) != string::npos){
+			cout << count << " " << temp->data << endl;
+			found = true;
+		}
+		if(temp->next == NULL)
+			break;
 		temp = temp->next;
 		count++;
 	}
-	cout << count << " " << temp->data << endl;
+	if(!found)
+		cout << "not found" << endl;
 }
 
 string stringAfterSpace(string word){
@@ -169,16 +122,16 @@ int toInt(string numStr){
 int main() {
 	LinkedList <string> * linkedList = new LinkedList<string>();
 	int index = 0;
-	string totalUserInput = "", input = "", command = "";
+	string userInputLine = "", input = "", command = "";
 	bool running = true;
 
 	while(running){
 
-		getline (cin, totalUserInput);
+		getline (cin, userInputLine);
 
-		if(totalUserInput.size() > 0){
-			input = stringAfterSpace(totalUserInput);
-			command = stringBeforeSpace(totalUserInput);
+		if(userInputLine.size() > 0){
+			input = stringAfterSpace(userInputLine);
+			command = stringBeforeSpace(userInputLine);
 
 			if(command == "insertEnd"){
 				linkedList->insertEnd(removeQuotes(input));
