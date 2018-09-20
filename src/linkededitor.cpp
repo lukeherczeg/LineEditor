@@ -1,6 +1,5 @@
 using namespace std;
 #include <iostream>
-#include <fstream>
 #include <string>
 #include "linkededitor.h"
 
@@ -78,10 +77,10 @@ template <class T> void LinkedList<T>::edit(int index, T value){
 	Node <T> * temp = head;
 	if(temp == NULL) 							// Same logic as delete function for handling empty linked list.
 		return;
-	for(int i = 1; i < index - 1; i++){
-		temp = temp->next;
+	for(int i = 0; i < index - 1; i++){
 		if(temp->next == NULL)
 			return;
+		temp = temp->next;
 	}
 	temp->data = value;
 }
